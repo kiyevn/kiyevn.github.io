@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Face the Faker - CTRL</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #0f0;
+      font-family: "Courier New", Courier, monospace;
+      text-align: center;
+      padding: 20px;
+    }
+    .blinking-cursor {
+    display: inline-block;
+    width: 10px;
+    background-color: #0f0;
+    animation: blink 0.8s step-end infinite;
+  }
+  h1 {
+    color: #0f0;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 30px;
+    text-align: center;
+  }
+
+  @keyframes blink {
+    50% { background-color: transparent; }
+  }
+
+  .button{
+    display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 30px;
+  }
+
+  button {
+      background-color: #0f0;
+      color: #000;
+      font-size: 1em;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      display: none; /*Initially hidden*/
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+  #result {
+    white-space: pre-wrap;
+    color: #0f0;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    margin-top: 15px;
+  }
+  </style>
+</head>
+<body>
+  <h2>! WARNING !</h2>
+  <div id="output"></div>
+  <div class="button">
+    <button id="StartGameButton" onclick="location.href='DC 3 Face the Faker.html'">Start Game</button>
+  </div>
+  <script>
+  function typeText(text, elementId, speed = 40, callback= null) {
+    const el = document.getElementById(elementId);
+    el.innerHTML = ''; // Clear previous text
+    let i = 0;
+
+    const cursor = document.createElement("span");
+    cursor.className = "blinking-cursor";
+    el.appendChild(cursor);
+
+    function type() {
+      if (i < text.length) {
+        const char = text[i] === '\n' ? '<br>' : text[i];
+        cursor.insertAdjacentHTML('beforebegin', char);
+        i++;
+        setTimeout(type, speed);
+      } else {
+        cursor.remove(); // Remove cursor when done
+        if (callback){ // Call the callback if it exists
+          callback();
+        }
+      }
+    }
+
+    type();
+  }
+  const message = 
+    "Four influencers. All reportedly missing. Their disappearances point to one name — CTRL.\n" +
+    "A master of AI, lurking behind the scenes.\n\n" +
+    "Your mission: Investigate each case and uncover the truth.\n\n\n" +
+    "Prove CTRL is behind it all — before another one goes 'missing.'\n\n\n\n" +
+    "Play the game… or lose them forever.";
+
+  const StartGameButton= document.getElementById('StartGameButton');
+
+  typeText(message, 'output', 60, function(){
+    StartGameButton.style.display='block';
+    setTimeout(() => {
+        StartGameButton.style.opacity = '1';
+      }, 60);
+    });
+</script>
+</body>
+</html>
