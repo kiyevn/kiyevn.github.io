@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CTRL Case File</title>
+  <style>
+    body {
+      background: #000;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      text-align: center;
+      margin: 2rem;
+    }
+
+    #game-area {
+      display: flex;
+      flex-direction: column;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      border: 2px solid #0f0;
+      box-shadow: 0 0 10px #0f0;
+      gap: 1.5rem;
+      background: #111;
+      border-radius: 8px;
+      height: 520px; /* fixed height */
+      overflow: hidden;
+    }
+
+    #game-heading {
+      font-size: 1.6rem;
+      font-weight: bold;
+    }
+
+    #game-content {
+      display: flex;
+      height: 100%;
+      gap: 2rem;
+    }
+
+    #left-segment {
+      flex: 2;
+      text-align: left;
+      white-space: pre-line;
+      padding: 0 1rem;
+      font-size: 0.75rem;
+      line-height: 1.3;
+      color: #0f0;
+      border-right: 1px solid #0f0;
+      overflow: hidden;
+    }
+
+    #typewriter {
+      min-height: 100%;
+    }
+
+    #right-segment {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #display {
+      height: 40px;
+      width: 180px;
+      margin-bottom: 10px;
+      border: 2px solid #0f0;
+      color: #0f0;
+      font-size: 1.4rem;
+      letter-spacing: 0.2em;
+      text-align: center;
+      line-height: 40px;
+      user-select: none;
+      background: #000;
+      border-radius: 5px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .success {
+      box-shadow: 0 0 15px 5px #0f0;
+    }
+
+    .error {
+      box-shadow: 0 0 15px 5px #f00;
+    }
+
+    #keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 60px);
+      grid-gap: 10px;
+      margin-top: 1rem;
+    }
+
+    .key-btn {
+      background: #0f0;
+      color: #000;
+      font-weight: bold;
+      font-size: 1.5rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 5px #0f0;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .key-btn:hover {
+      background: #0c0;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-area">
+  <div id="game-heading">Database: Missing Influencers</div>
+
+  <div id="game-content">
+    <div id="left-segment">
+      <div id="typewriter"></div>
+    </div>
+
+    <div id="right-segment">
+      <div id="display"></div>
+      <div id="keypad">
+        <button class="key-btn">1</button>
+        <button class="key-btn">2</button>
+        <button class="key-btn">3</button>
+        <button class="key-btn">4</button>
+        <button class="key-btn">5</button>
+        <button class="key-btn">6</button>
+        <button class="key-btn">7</button>
+        <button class="key-btn">8</button>
+        <button class="key-btn">9</button>
+        <div></div>
+        <button class="key-btn">0</button>
+        <button class="key-btn" id="clear-btn">C</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const baseText = 
+`/retrieveinfo
+
+Victim #01: Mei - Missing
+Instagram User: @starrymei.c [Last Updated <strong>Today, 12:00:00AM</strong>]
+Joined since January 2021
+@starrymei.c has changed their username 1 time.
+Followers: 13.2k
+-
+Victim #02: Sheryl - Not Missing
+Instagram User: @sherily67.t [Last Updated <strong>Yesterday, 11:59:40PM</strong>]
+Joined since July 2020
+Followers: 9.7k
+-
+Victim #03: Bailey - Missing
+Instagram User: @superbailey.r [Last Updated <strong>Today, 12:10:00AM</strong>]
+Joined since April 2023
+@superbailey.r has changed their username 1 time.
+Followers: 17.8k
+-
+Victim #04: Jenny - Missing
+Instagram User: @jenny_eats.l [Last Updated <strong>Today, 12:13:06AM</strong>]
+Joined since September 2022
+@jenny_eats.l has changed their username 1 time.
+Followers: 10.4k
+
+// pr3ss 000 4 h1nt - w0rk5 0n1y 0nc3 //`;
+
+  const hintMessage = 
+`\n\nnotice the pattern formed in the usernames created. convert the alphabet letters into numbers 1-9 to derive the passcode for the next stage.`;
+
+  const typewriter = document.getElementById("typewriter");
+  let baseIndex = 0;
+  let hintIndex = 0;
+  let hintUnlocked = false;
+  let hintStarted = false;
+  let htmlBuffer = "";
+
+  function typeBaseText() {
+    if (baseIndex < baseText.length) {
+      htmlBuffer += baseText.charAt(baseIndex);
+      typewriter.innerHTML = htmlBuffer;
+      baseIndex++;
+      setTimeout(typeBaseText, 18);
+    }
+  }
+
+  function typeHint() {
+    if (hintIndex < hintMessage.length) {
+      htmlBuffer += hintMessage.charAt(hintIndex);
+      typewriter.innerHTML = htmlBuffer;
+      hintIndex++;
+      setTimeout(typeHint, 25);
+    }
+  }
+
+  typeBaseText();
+
+  const display = document.getElementById('display');
+  const keypadButtons = document.querySelectorAll('.key-btn');
+  const correctPassword = "3293";
+  let input = "";
+
+  keypadButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const val = button.textContent;
+
+      if (val === 'C') {
+        input = "";
+        updateDisplay();
+        display.classList.remove('error', 'success');
+        return;
+      }
+
+      if (input.length < 4) {
+        input += val;
+        updateDisplay();
+
+        // 🔓 Trigger hint as soon as 000 is entered
+        if (input === "000" && !hintStarted) {
+          hintUnlocked = true;
+          hintStarted = true;
+          typeHint();
+          input = "";
+          updateDisplay();
+          return;
+        }
+      }
+
+      if (input.length === 4) {
+        checkPassword(input);
+      }
+    });
+  });
+
+  function updateDisplay() {
+    display.textContent = input;
+  }
+
+  function checkPassword(code) {
+    if (code === correctPassword && hintUnlocked) {
+      display.classList.remove('error');
+      display.classList.add('success');
+      setTimeout(() => {
+        window.location.href = "dm-leak.html"; 
+      }, 1500);
+    } else {
+      display.classList.remove('success');
+      display.classList.add('error');
+      setTimeout(() => {
+        input = "";
+        updateDisplay();
+        display.classList.remove('error');
+      }, 1000);
+    }
+  }
+</script>
+
+</body>
+</html>
