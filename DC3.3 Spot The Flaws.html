@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Spot the Flaws: Bailey</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #0f0;
+      font-family: 'Courier New', Courier, monospace;
+      user-select: none;
+      text-align: center;
+    }
+
+    #container {
+      width: 960px;
+      height: 540px;
+      margin: 3rem auto;
+      padding: 2rem;
+      border: 2px solid #0f0;
+      background: #111;
+      box-shadow: 0 0 15px #0f0;
+    }
+
+    h1, h2 {
+      color: #0f0;
+      margin-bottom: 0.5rem;
+    }
+
+    p, #status {
+      color: #aaa;
+      font-size: 0.95rem;
+    }
+
+    #timer {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      color: #0f0;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 2rem;
+      margin-left: 4.2rem;
+      margin-right: 3.2rem;
+      gap: 140px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #0ff;
+      text-transform: uppercase;
+    }
+
+    #game-area {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 0.5rem;
+      gap: 1rem;
+    }
+
+    .image-container {
+      position: relative;
+      border: 2px solid #0f0;
+    }
+
+    img {
+      display: block;
+      max-width: 200px;
+      width: 100%;
+      height: 200px;
+    }
+
+    .spot {
+      position: absolute;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+    }
+
+    .spot:hover {
+      border-color: #ff0;
+    }
+
+    .spot.found {
+      border-color: #0f0;
+      background: rgba(0, 255, 0, 0.3);
+      pointer-events: none;
+    }
+
+    #decision-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .decision-btn {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      cursor: not-allowed;
+      opacity: 0.6;
+      transition: all 0.3s ease;
+    }
+
+    .decision-btn.active {
+      cursor: pointer;
+      opacity: 1;
+    }
+
+    #btn-missing {
+      background: #f00;
+      color: #fff;
+    }
+
+    #btn-not-missing {
+      background: #0f0;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>Victim #03: @superbailey.R</h1>
+    <h2>Determine if Bailey is missing.</h2>
+    <p>/ Name: Bailey / Age: 18 / Last Seen: IG Livestream /<br>Note: Something’s off in the screenshot — can you tell what’s fake? /</p>
+
+    <div id="timer">⏳ TIME LEFT: <span id="time-left">30</span>s</div>
+    <div id="status">Differences found: 0 / 3</div>
+
+    <div class="label-row">
+      <div>Fan's Screenshot</div>
+      <div>Victim's Profile</div>
+    </div>
+
+    <div id="game-area">
+      <div class="image-container" id="imgA-container">
+        <img src="bailey-live.jpg" alt="Victim Profile Image" />
+      </div>
+      <div class="image-container" id="imgB-container">
+        <img src="bailey-profile.jpg" alt="Fake Video Frame" />
+      </div>
+    </div>
+
+    <div id="decision-buttons">
+      <button id="btn-missing" class="decision-btn">Missing</button>
+      <button id="btn-not-missing" class="decision-btn">Not Missing</button>
+    </div>
+
+  </div>
+
+ <script>
+    const differences = [
+      { container: 'imgA-container', x: 39, y: 31, radius: 6 },
+      { container: 'imgA-container', x: 46, y: 30, radius: 6 },
+      { container: 'imgA-container', x: 57, y: 32, radius: 6 },
+    ];
+
+    let foundCount = 0;
+    const total = differences.length;
+    let timer = 30;
+    let interval;
+
+    const status = document.getElementById('status');
+    const timeDisplay = document.getElementById('time-left');
+    const btnMissing = document.getElementById('btn-missing');
+    const btnNotMissing = document.getElementById('btn-not-missing');
+
+    function createSpot(diff) {
+      const container = document.getElementById(diff.container);
+      const spot = document.createElement('div');
+      spot.classList.add('spot');
+      spot.style.width = spot.style.height = diff.radius * 2 + 'px';
+      spot.style.left = `calc(${diff.x}% - ${diff.radius}px)`;
+      spot.style.top = `calc(${diff.y}% - ${diff.radius}px)`;
+      container.appendChild(spot);
+
+      spot.addEventListener('click', () => {
+        if (!spot.classList.contains('found')) {
+          spot.classList.add('found');
+          foundCount++;
+          updateStatus();
+        }
+      });
+    }
+
+    function updateStatus() {
+      status.textContent = `Differences found: ${foundCount} / ${total}`;
+      if (foundCount === total) {
+        clearInterval(interval);
+        activateButtons();
+      }
+    }
+
+    function startTimer() {
+      interval = setInterval(() => {
+        timer--;
+        timeDisplay.textContent = timer;
+        if (timer <= 0) {
+          clearInterval(interval);
+          alert("⏰ Time's up! You've got to hurry...");
+          window.location.reload();
+        }
+      }, 1000);
+    }
+
+    function activateButtons() {
+      [btnMissing, btnNotMissing].forEach(btn => {
+        btn.classList.add('active');
+        btn.disabled = false;
+        btn.style.cursor = 'pointer';
+      });
+    }
+
+    // Game start
+    differences.forEach(createSpot);
+    updateStatus();
+    startTimer();
+
+    // Button logic
+    btnNotMissing.addEventListener('click', () => {
+      if (foundCount === total) {
+        alert("❌ Incorrect. Try again.");
+      }
+    });
+
+    btnMissing.addEventListener('click', () => {
+      if (foundCount === total) {
+        alert("✅ Correct. If that's not her in the live, does that mean she's missing...?");
+        window.location.href = "DC 3.4 Spot The Flaws.html";
+      }
+    });
+  </script>
+</body>
+</html>
